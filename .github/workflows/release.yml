@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Get version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+
+    - name: Publish Web App (Linux-x64)
+      run: |
+        dotnet publish src/MistakeMate.Web/MistakeMate.Web.csproj \
+          --configuration Release \
+          --runtime linux-x64 \
+          --self-contained true \
+          --output ./publish/linux-x64 \
+          -p:PublishTrimmed=false
+
+    - name: Publish Web App (win-x64)
+      run: |
+        dotnet publish src/MistakeMate.Web/MistakeMate.Web.csproj \
+          --configuration Release \
+          --runtime win-x64 \
+          --self-contained true \
+          --output ./publish/win-x64 \
+          -p:PublishTrimmed=false
+
+    - name: Publish Web App (osx-x64)
+      run: |
+        dotnet publish src/MistakeMate.Web/MistakeMate.Web.csproj \
+          --configuration Release \
+          --runtime osx-x64 \
+          --self-contained true \
+          --output ./publish/osx-x64 \
+          -p:PublishTrimmed=false
+
+    - name: Create release archives
+      run: |
+        cd ./publish
+        tar -czf MistakeMate-${{ steps.version.outputs.VERSION }}-linux-x64.tar.gz -C linux-x64 .
+        tar -czf MistakeMate-${{ steps.version.outputs.VERSION }}-osx-x64.tar.gz -C osx-x64 .
+        cd win-x64 && zip -r ../../MistakeMate-${{ steps.version.outputs.VERSION }}-win-x64.zip .
+
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        if [ -f "CHANGELOG.md" ]; then
+          # Extract notes for the current version from CHANGELOG.md
+          sed -n "/## \[${{ steps.version.outputs.VERSION }}\]/,/^## /p" CHANGELOG.md | head -n -1 > release_notes.md
+        else
+          echo "## Release ${{ steps.version.outputs.VERSION }}" > release_notes.md
+          echo "" >> release_notes.md
+          echo "### 🚀 Features" >> release_notes.md
+          echo "### 🐛 Bug Fixes" >> release_notes.md
+          echo "### 📦 Changes" >> release_notes.md
+        fi
+        echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+        cat release_notes.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref }}
+        name: Release v${{ steps.version.outputs.VERSION }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        draft: false
+        prerelease: false
+        files: |
+          ./publish/*.tar.gz
+          ./publish/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts
+        path: ./publish/
+        retention-days: 90
