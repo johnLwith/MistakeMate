@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Mistake - MistakeMate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <nav class="navigation">
+                <h1>📝 MistakeMate</h1>
+                <a href="list.html" class="nav-btn">📚 View All Mistakes</a>
+            </nav>
+        </header>
+
+        <!-- Camera Section -->
+        <div class="camera-section">
+            <h2>📸 Capture Your Mistake</h2>
+            <div class="camera-container">
+                <video id="camera" autoplay playsinline></video>
+                <div class="camera-controls">
+                    <button id="capture-btn" onclick="capturePhoto()">📸 Take Photo</button>
+                    <input type="file" id="file-input" accept="image/*" onchange="handleFileUpload(event)" style="display: none;">
+                    <button id="upload-btn" onclick="document.getElementById('file-input').click()">📁 Upload Photo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Preview -->
+        <div id="photo-preview" class="photo-preview" style="display: none;">
+            <img id="captured-photo" src="" alt="Captured photo">
+            <button onclick="retakePhoto()" class="retake-btn">🔄 Retake</button>
+        </div>
+
+        <!-- Mistake Form -->
+        <div class="form-section">
+            <h2>📝 Record What Happened</h2>
+            <form id="mistake-form">
+                <div class="form-group">
+                    <label for="mistake-description">Mistake Description:</label>
+                    <textarea id="mistake-description" rows="3" required placeholder="Describe what went wrong and what you learned..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" disabled>💾 Save Mistake</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="form.js"></script>
+</body>
+</html>

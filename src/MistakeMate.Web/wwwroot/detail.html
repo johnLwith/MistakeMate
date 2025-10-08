@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistake Details - MistakeMate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <nav class="navigation">
+                <a href="list.html" class="nav-btn">← Back to List</a>
+                <h1>📖 Mistake Details</h1>
+                <a href="index.html" class="nav-btn">➕ Add New</a>
+            </nav>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading mistake details...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error-state" style="display: none;">
+            <h3>❌ Mistake Not Found</h3>
+            <p>The mistake you're looking for doesn't exist or has been deleted.</p>
+            <a href="list.html" class="cta-button">← Back to All Mistakes</a>
+        </div>
+
+        <!-- Mistake Detail Content -->
+        <div id="mistake-detail" class="mistake-detail" style="display: none;">
+            <div class="detail-header">
+                <div class="detail-date-time">
+                    <div class="date" id="detail-date"></div>
+                    <div class="time" id="detail-time"></div>
+                </div>
+                <div class="detail-actions">
+                    <button id="delete-btn" class="delete-btn">🗑️ Delete</button>
+                </div>
+            </div>
+
+            <div class="detail-content">
+                <div class="photo-section">
+                    <h2>📸 Photo Evidence</h2>
+                    <div class="photo-container">
+                        <img id="detail-photo" src="" alt="Mistake photo" class="detail-photo">
+                        <div class="photo-actions">
+                            <button id="view-fullsize" class="view-btn">🔍 View Full Size</button>
+                            <button id="download-photo" class="download-btn">💾 Download Photo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="description-section">
+                    <h2>📝 What Happened?</h2>
+                    <div class="description-card">
+                        <p id="detail-description" class="detail-text"></p>
+                    </div>
+                </div>
+
+                <div class="time-section">
+                    <h2>📅 Time Information</h2>
+                    <div class="time-card">
+                        <div class="time-item">
+                            <h3>⏰ Time Since Occurred</h3>
+                            <p id="time-ago" class="time-ago"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <h2>🚀 Next Steps</h2>
+                    <div class="action-buttons">
+                        <a href="index.html" class="action-btn primary">➕ Record Similar Mistake</a>
+                        <a href="list.html" class="action-btn secondary">📚 View All Mistakes</a>
+                        <button id="share-btn" class="action-btn tertiary">📤 Share Learning</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-size Photo Modal -->
+    <div id="photo-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="modal-photo" src="" alt="Full size mistake photo">
+        </div>
+    </div>
+
+    <script src="detail.js"></script>
+</body>
+</html>
